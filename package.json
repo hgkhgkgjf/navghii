@@ -11,12 +11,12 @@
     "db:init:local": "wrangler d1 execute bookmark-db --local --file=schema.sql",
     "db:init:remote": "wrangler d1 execute bookmark-db --remote --file=schema.sql",
     "db:migrate:indexes": "wrangler d1 execute bookmark-db --remote --file=migration-add-indexes.sql",
-    "version": "node scripts/update-version.js && git add .",
+    "version": "node scripts/update-version.cjs && git add .",
     "postversion": "git push && git push --tags",
-    "release": "node scripts/release.js",
-    "release:patch": "node scripts/release.js patch",
-    "release:minor": "node scripts/release.js minor",
-    "release:major": "node scripts/release.js major"
+    "release": "node scripts/release.cjs",
+    "release:patch": "node scripts/release.cjs patch",
+    "release:minor": "node scripts/release.cjs minor",
+    "release:major": "node scripts/release.cjs major"
   },
   "dependencies": {
     "vue": "^3.4.0"

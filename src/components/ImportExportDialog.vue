@@ -370,6 +370,11 @@ defineExpose({
   max-width: 500px;
 }
 
+/* 确保导入导出对话框显示在设置页面之上 */
+.dialog-overlay {
+  z-index: 4000 !important;
+}
+
 .export-section,
 .import-section {
   margin-bottom: 1.5rem;

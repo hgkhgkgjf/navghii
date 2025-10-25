@@ -216,23 +216,26 @@ const handleLogout = async () => {
 }
 
 const handleSettingsAction = (action) => {
-  // 关闭设置页面
-  settingsPage.value.close()
-  
-  // 延迟执行操作，等待设置页面关闭动画
-  setTimeout(() => {
-    switch (action) {
-      case 'addBookmark':
+  switch (action) {
+    case 'importExport':
+      // 导入导出保持在设置页面内，不关闭设置页面
+      importExportDialog.value.open()
+      break
+    case 'addBookmark':
+      // 其他操作需要关闭设置页面
+      settingsPage.value.close()
+      setTimeout(() => {
         bookmarkDialog.value.open()
-        break
-      case 'addCategory':
+      }, 300)
+      break
+    case 'addCategory':
+      // 其他操作需要关闭设置页面
+      settingsPage.value.close()
+      setTimeout(() => {
         handleAddCategory()
-        break
-      case 'importExport':
-        importExportDialog.value.open()
-        break
-    }
-  }, 300)
+      }, 300)
+      break
+  }
 }
 
 const handleAddCategory = async () => {

@@ -71,7 +71,7 @@
         </div>
         <div class="form-content">
           <div class="form-title">许可证</div>
-          <div class="form-description">MIT License</div>
+          <div class="form-description">Apache License 2.0</div>
         </div>
       </div>
     </div>

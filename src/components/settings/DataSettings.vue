@@ -53,52 +53,86 @@ defineEmits(['action'])
 
 <style scoped>
 .settings-section {
-  max-width: 600px;
+  max-width: 800px;
 }
 
 .section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
   color: var(--text);
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.section-title::before {
+  content: '📊';
+  font-size: var(--text-xl);
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
+  margin-bottom: var(--space-6);
+  padding: var(--space-6);
   background: var(--bg-secondary);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.form-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--success), var(--success-light));
+  opacity: 0;
   transition: var(--transition);
 }
 
 .form-group:hover {
   border-color: var(--primary);
-  transform: translateX(4px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--shadow-md);
+}
+
+.form-group:hover::before {
+  opacity: 1;
 }
 
 .form-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 .form-icon {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   background: var(--primary);
   color: white;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transition: var(--transition);
+}
+
+.form-group:hover .form-icon {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
 }
 
 .form-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   stroke-width: 2;
 }
 
@@ -107,36 +141,68 @@ defineEmits(['action'])
 }
 
 .form-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
   color: var(--text);
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.form-title::before {
+  content: '📁';
+  font-size: var(--text-base);
 }
 
 .form-description {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 .btn {
   width: 100%;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  font-weight: 500;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   cursor: pointer;
   transition: var(--transition);
   border: none;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 .btn-primary {
   background: var(--primary);
   color: white;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .btn-primary:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 .stats-group {
@@ -148,7 +214,17 @@ defineEmits(['action'])
   transform: none;
 }
 
+.stats-group:hover::before {
+  opacity: 0;
+}
+
 .stats-icon {
   background: var(--success);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.form-group:hover .stats-icon {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 </style>

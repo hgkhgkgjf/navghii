@@ -92,64 +92,123 @@ defineEmits(['editTitle', 'editFooter', 'toggleTheme', 'toggleSearch', 'toggleHi
 
 <style scoped>
 .settings-section {
-  max-width: 600px;
+  max-width: 800px;
 }
 
 .section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
   color: var(--text);
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.section-title::before {
+  content: '🎨';
+  font-size: var(--text-xl);
 }
 
 .form-group {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
+  margin-bottom: var(--space-6);
+  padding: var(--space-6);
   background: var(--bg-secondary);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.form-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.form-group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.form-group:hover::before {
+  opacity: 1;
 }
 
 .form-label {
   display: block;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
   color: var(--text);
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.form-label::before {
+  content: '⚡';
+  font-size: var(--text-base);
 }
 
 .form-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .form-input {
   flex: 1;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
   background: var(--bg);
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .form-input:read-only {
   background: var(--bg-tertiary);
   color: var(--text-secondary);
+  cursor: not-allowed;
 }
 
 .form-text {
   flex: 1;
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
 }
 
 .form-hint {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.5;
+  margin-top: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.form-hint::before {
+  content: '💡';
+  font-size: var(--text-xs);
 }
 
 .footer-preview {
@@ -164,39 +223,64 @@ defineEmits(['editTitle', 'editFooter', 'toggleTheme', 'toggleSearch', 'toggleHi
 }
 
 .btn {
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  font-weight: 500;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   cursor: pointer;
   transition: var(--transition);
   border: none;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 .btn-primary {
   background: var(--primary);
   color: white;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .btn-primary:hover {
   background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 .btn-secondary {
   background: var(--bg-tertiary);
   color: var(--text);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
 }
 
 .btn-secondary:hover {
   background: var(--bg-hover);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .switch {
   position: relative;
   display: inline-block;
-  width: 50px;
-  height: 26px;
+  width: 60px;
+  height: 32px;
   flex-shrink: 0;
 }
 
@@ -215,27 +299,38 @@ defineEmits(['editTitle', 'editFooter', 'toggleTheme', 'toggleSearch', 'toggleHi
   bottom: 0;
   background: var(--border);
   transition: var(--transition);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 3px;
+  height: 24px;
+  width: 24px;
+  left: 4px;
+  bottom: 4px;
   background: white;
   transition: var(--transition);
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .switch input:checked + .slider {
   background: var(--primary);
+  box-shadow: inset 0 2px 4px rgba(99, 102, 241, 0.3);
 }
 
 .switch input:checked + .slider:before {
-  transform: translateX(24px);
+  transform: translateX(28px);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.switch:hover .slider {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.switch:hover input:checked + .slider {
+  box-shadow: inset 0 2px 4px rgba(99, 102, 241, 0.4);
 }
 </style>

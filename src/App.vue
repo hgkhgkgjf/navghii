@@ -5,12 +5,29 @@
       <div class="header-content">
         <h1 class="app-title">{{ customTitle }}</h1>
         
-        <div class="header-actions">
-          <!-- Admin Controls in Header -->
-          <template v-if="isAuthenticated">
+        <!-- 未登录状态：直接显示登录按钮 -->
+        <button 
+          v-if="!isAuthenticated"
+          class="btn btn-primary"
+          @click="loginModal.open(); showMobileMenu = false"
+        >
+          登录
+        </button>
+        
+        <!-- 已登录状态：显示汉堡菜单按钮 -->
+        <template v-else>
+          <button class="mobile-menu-btn" @click.stop="showMobileMenu = !showMobileMenu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M3 12h18M3 6h18M3 18h18"/>
+            </svg>
+          </button>
+          
+          <!-- 桌面端/移动端展开的操作按钮 -->
+          <div class="header-actions" :class="{ 'mobile-menu-open': showMobileMenu }">
+            <!-- Admin Controls in Header -->
             <button 
               class="btn btn-secondary"
-              @click="settingsPage.open()"
+              @click="settingsPage.open(); showMobileMenu = false"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <circle cx="12" cy="12" r="3"/>
@@ -22,7 +39,7 @@
             <button 
               class="btn"
               :class="isEditMode ? 'btn-primary' : 'btn-secondary'"
-              @click="isEditMode = !isEditMode"
+              @click="isEditMode = !isEditMode; showMobileMenu = false"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -30,23 +47,15 @@
               </svg>
               <span>{{ isEditMode ? '完成' : '编辑' }}</span>
             </button>
-          </template>
-          
-          <button 
-            v-if="!isAuthenticated" 
-            class="btn btn-primary"
-            @click="loginModal.open()"
-          >
-            登录
-          </button>
-          <button 
-            v-else 
-            class="btn btn-secondary"
-            @click="handleLogout"
-          >
-            退出
-          </button>
-        </div>
+            
+            <button 
+              class="btn btn-secondary"
+              @click="handleLogout(); showMobileMenu = false"
+            >
+              退出
+            </button>
+          </div>
+        </template>
       </div>
       
       <div v-if="showSearch" class="header-search">
@@ -87,13 +96,29 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
         </svg>
-        <p>还没有分类</p>
-        <p v-if="isAuthenticated" style="font-size: 0.9rem; margin-top: 0.5rem;">
-          点击右上角 ⚙️ 设置按钮开始添加
+        <p>还没有分类和书签</p>
+        <p v-if="isAuthenticated" style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--text-secondary);">
+          点击右上角 <strong style="color: var(--primary);">⚙️ 设置</strong> → <strong style="color: var(--primary);">📊 数据管理</strong> → <strong style="color: var(--primary);">导入书签</strong>
+        </p>
+        <p v-if="isAuthenticated" style="font-size: 0.875rem; margin-top: 0.75rem; color: var(--text-tertiary);">
+          或点击 <strong style="color: var(--primary);">✏️ 编辑</strong> 按钮手动添加
         </p>
         <p v-else style="font-size: 0.9rem; margin-top: 0.5rem;">
           请先登录以管理书签
         </p>
+        <button 
+          v-if="isAuthenticated" 
+          class="btn btn-primary" 
+          @click="settingsPage.open(); setActiveSettingsTab('data')" 
+          style="margin-top: 1.5rem;"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 18px; height: 18px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          快速导入书签
+        </button>
       </div>
       
       <div v-else class="categories-container">
@@ -132,6 +157,7 @@
     <!-- Settings Page -->
     <SettingsPage 
       ref="settingsPage"
+      :theme-mode="themeMode"
       :is-dark="isDark"
       :bookmarks="bookmarks"
       :show-search="showSearch"
@@ -141,7 +167,7 @@
       :footer-content="footerContent"
       :active-settings-tab="activeSettingsTab"
       @action="handleSettingsAction"
-      @toggle-theme="toggleTheme"
+      @set-theme-mode="setThemeMode"
       @toggle-search="toggleSearch"
       @toggle-hide-empty="toggleHideEmptyCategories"
       @toggle-public-mode="togglePublicMode"
@@ -161,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useAuth } from './composables/useAuth'
 import { useBookmarks } from './composables/useBookmarks'
 import { useTheme } from './composables/useTheme'
@@ -195,12 +221,13 @@ const {
   deleteBookmark,
   reorderItems
 } = useBookmarks()
-const { isDark, toggleTheme, loadThemeFromDB } = useTheme()
+const { themeMode, isDark, setThemeMode, toggleTheme, loadThemeFromDB } = useTheme()
 const { showSearch, hideEmptyCategories, customTitle, footerContent, activeSettingsTab, publicMode, toggleSearch, toggleHideEmptyCategories, togglePublicMode, updateCustomTitle, updateFooterContent, setActiveSettingsTab, loadSettingsFromDB } = useSettings()
 const { setToastInstance, success: toastSuccess, error: toastError } = useToast()
 
 const loading = ref(true)
 const isEditMode = ref(false)
+const showMobileMenu = ref(false)
 const loginModal = ref(null)
 const bookmarkDialog = ref(null)
 const confirmDialog = ref(null)
@@ -234,6 +261,19 @@ onMounted(async () => {
   watch(customTitle, (newTitle) => {
     document.title = newTitle
   }, { immediate: true })
+  
+  // 点击外部关闭汉堡菜单
+  const handleClickOutside = (event) => {
+    if (showMobileMenu.value && !event.target.closest('.header-content')) {
+      showMobileMenu.value = false
+    }
+  }
+  document.addEventListener('click', handleClickOutside)
+  
+  // 清理事件监听
+  onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside)
+  })
 })
 
 const handleLogout = async () => {

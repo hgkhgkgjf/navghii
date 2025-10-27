@@ -78,11 +78,11 @@
               @action="handleAction"
               @editTitle="editTitle"
               @editFooter="editFooter"
-              @toggleTheme="$emit('toggleTheme')"
-                         @toggleSearch="$emit('toggleSearch')"
-                         @toggleHideEmpty="$emit('toggleHideEmpty')"
-                         @togglePublicMode="$emit('togglePublicMode')"
-                       />
+              @setThemeMode="$emit('setThemeMode', $event)"
+              @toggleSearch="$emit('toggleSearch')"
+              @toggleHideEmpty="$emit('toggleHideEmpty')"
+              @togglePublicMode="$emit('togglePublicMode')"
+            />
           </div>
         </div>
       </div>
@@ -97,6 +97,10 @@ import DataSettings from './settings/DataSettings.vue'
 import AboutSettings from './settings/AboutSettings.vue'
 
 const props = defineProps({
+  themeMode: {
+    type: String,
+    default: 'system'
+  },
   isDark: {
     type: Boolean,
     default: false
@@ -131,7 +135,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['action', 'close', 'toggleTheme', 'toggleSearch', 'toggleHideEmpty', 'togglePublicMode', 'updateTitle', 'updateFooter', 'editTitle', 'editFooter', 'setActiveTab'])
+const emit = defineEmits(['action', 'close', 'setThemeMode', 'toggleSearch', 'toggleHideEmpty', 'togglePublicMode', 'updateTitle', 'updateFooter', 'editTitle', 'editFooter', 'setActiveTab'])
 
 const menuItems = ref([
   { id: 'appearance', name: '外观设置', icon: '🎨' },
@@ -156,6 +160,7 @@ const currentSettingsComponent = computed(() => {
 })
 
 const componentProps = computed(() => ({
+  themeMode: props.themeMode,
   isDark: props.isDark,
   showSearch: props.showSearch,
   hideEmptyCategories: props.hideEmptyCategories,
@@ -407,7 +412,7 @@ defineExpose({
   padding: 0.5rem;
   cursor: pointer;
   color: var(--text);
-  display: flex;
+  display: none; /* 桌面端默认隐藏 */
   align-items: center;
   justify-content: center;
   transition: var(--transition);
@@ -546,6 +551,11 @@ defineExpose({
 
 /* Mobile optimization */
 @media (max-width: 768px) {
+  /* 移动端显示汉堡菜单按钮 */
+  .menu-toggle {
+    display: flex;
+  }
+  
   .settings-page {
     padding: 0;
   }

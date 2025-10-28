@@ -1,0 +1,33 @@
+name: Sync fork from upstream
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # 每 6 小时同步一次（按需改）
+  workflow_dispatch: {}      # 允许在 Actions 里手动触发
+
+# 让 GITHUB_TOKEN 拥有写权限，便于 push 回你的 fork
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set default branch env
+        run: echo "BRANCH=${{ github.event.repository.default_branch }}" >> $GITHUB_ENV
+
+      - name: Add upstream and fast-forward
+        run: |
+          git remote add upstream https://github.com/deerwan/nav.git
+          git fetch upstream --prune
+          git switch "$BRANCH"
+          # 只做“快进”合并；如果你的 fork 有额外提交，就跳过，避免生成合并提交
+          git merge --ff-only "upstream/$BRANCH" || exit 0
+
+      - name: Push back to fork
+        run: git push origin "$BRANCH"
